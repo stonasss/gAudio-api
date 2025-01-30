@@ -1,16 +1,31 @@
 import { Request, Response, NextFunction } from "express";
+import { userRepositories } from "@/repositories/user-repositories";
 import httpStatus from "http-status";
-import { Schema } from "joi";
 
-export function validateSchema(schema: Schema) {
-    return (req: Request, res: Response, next: NextFunction) => {
-        const { error } = schema.validate(req.body, { abortEarly: false });
-        if (error) {
-            const errorMessages = error.details.map((detail) => detail.message);
+export async function authValidate(
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    const authorization = req.headers.authorization;
+    const userToken = authorization?.replace("Bearer ", "");
+
+    if (!userToken)
+        return res.status(httpStatus.UNAUTHORIZED).send("Token not found");
+
+    try {
+        const sessionExists = await userRepositories.findSessionByToken(
+            userToken
+        );
+
+        if (!sessionExists)
             return res
-                .status(httpStatus.BAD_REQUEST)
-                .json({ errors: errorMessages });
-        }
+                .status(httpStatus.UNAUTHORIZED)
+                .send("Authentication error");
+        res.locals.user = sessionExists.token;
+
         next();
-    };
+    } catch (err) {
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).send(err.message);
+    }
 }

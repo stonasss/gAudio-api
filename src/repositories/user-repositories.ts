@@ -26,6 +26,14 @@ async function findUserById(id: number) {
     return user;
 }
 
+async function findSessionByToken(userToken: string) {
+    return prisma.session.findFirst({
+        where: {
+            token: userToken,
+        },
+    });
+}
+
 async function createUser({ username, email, password }: User) {
     const user = await prisma.user.create({
         data: {
@@ -35,7 +43,24 @@ async function createUser({ username, email, password }: User) {
         },
     });
 
-    return user
+    return user;
+}
+
+async function createSession(token: string, userId: number) {
+    const session = await prisma.session.upsert({
+        where: {
+            userId,
+        },
+        create: {
+            userId,
+            token
+        },
+        update: {
+            token
+        }
+    })
+
+    return session;
 }
 
 async function updateUser({ username, email, password, userId }: UserUpdate) {
@@ -66,8 +91,10 @@ async function deleteUser(userId: number){
 export const userRepositories = {
     findUsers,
     findUserByEmail,
+    findSessionByToken,
     findUserById,
     createUser,
+    createSession,
     updateUser,
     deleteUser
 }

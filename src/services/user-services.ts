@@ -1,7 +1,8 @@
 import bcrypt from "bcrypt";
 import { userRepositories } from "@/repositories/user-repositories";
 import { errors } from "@/errors/index"
-import { User, UserId, UserUpdate } from "@/utils/user-protocols";
+import { LoginUser, User, UserId, UserUpdate } from "@/utils/user-protocols";
+import jwt from "jsonwebtoken";
 
 async function getUsers() {
     const users = await userRepositories.findUsers();
@@ -20,6 +21,20 @@ async function createUser({ username, email, password }: User) {
         email,
         password: hashedPasswd,
     });
+}
+
+async function loginUser({ email, password }: LoginUser) {
+    const userExists = await userRepositories.findUserByEmail(email);
+    if (!userExists) throw errors.invalidCredentialsError();
+
+    const validPassword = await bcrypt.compare(password, userExists.password);
+    if (!validPassword) throw errors.invalidCredentialsError();
+
+    const userId = Number(userExists.id);
+    const token = jwt.sign({ id: userExists.id }, process.env.SECRET_KEY);
+
+    const userInfo = await userRepositories.createSession(token, userId);
+    return userInfo;
 }
 
 async function getSpecificUser(id: number) {
@@ -54,6 +69,7 @@ async function deleteUser({ userId }: UserId) {
 export const userServices = {
     getUsers,
     createUser,
+    loginUser,
     getSpecificUser,
     updateUser,
     deleteUser

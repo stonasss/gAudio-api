@@ -13,6 +13,15 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model session {
+    id        Int      @id(map: "sessions_pk") @default(autoincrement())
+    userId    Int      @unique
+    token     String   @unique @db.VarChar
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    user      user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_fk0")
+}
+
 model user {
     id         Int      @id @default(autoincrement())
     username   String
@@ -20,4 +29,5 @@ model user {
     password   String
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+    session    session[]
 }

@@ -4,6 +4,8 @@ export interface User {
     password: string;
 };
 
+export type LoginUser = Omit<User, "token" | "id" | "username">
+
 export interface ApplicationError {
     name: string;
     message: string;
