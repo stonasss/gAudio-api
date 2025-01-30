@@ -39,3 +39,17 @@ export async function getSpecificUser(req: any, res: any) {
         errorHandler(error, req, res)
     }
 }
+
+export async function updateUser(req: any, res: any) {
+    const { id } = req.params;
+    const userId = parseInt(id);
+    const { username, email, password } = req.body;
+
+    try {
+        const result = await userServices.updateUser({ username, email, password, userId })
+        return res.status(httpStatus.OK).send({ result });
+    } catch (err) {
+        const error = err as ApplicationError | Error;
+        errorHandler(error, req, res);
+    }
+}

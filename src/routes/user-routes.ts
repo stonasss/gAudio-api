@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { getUsers, register, getSpecificUser } from "@/controllers/user-controllers"
+import { getUsers, register, getSpecificUser, updateUser } from "@/controllers/user-controllers"
+/* import { validateSchema } from "@/middlewares/auth-validation-middleware";
+import { registerSchema } from "@/schemas/user-schemas"; */
 
 const userRoutes = Router();
 
 userRoutes.post("/auth/create", register);
 userRoutes.get("/auth", getUsers);
 userRoutes.get("/auth/:id", getSpecificUser);
+userRoutes.put("/auth/:id", updateUser);
 
 export default userRoutes;
