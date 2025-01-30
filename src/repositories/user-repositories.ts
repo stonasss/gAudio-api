@@ -53,10 +53,21 @@ async function updateUser({ username, email, password, userId }: UserUpdate) {
     return updatedUser;
 }
 
+async function deleteUser(userId: number){
+    const deletedUser = await prisma.user.delete({
+        where: {
+            id: userId,
+        }
+    });
+
+    return deletedUser;
+}
+
 export const userRepositories = {
     findUsers,
     findUserByEmail,
     findUserById,
     createUser,
-    updateUser
+    updateUser,
+    deleteUser
 }

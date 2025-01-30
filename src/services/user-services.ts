@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { userRepositories } from "@/repositories/user-repositories";
 import { errors } from "@/errors/index"
-import { User, UserUpdate } from "@/utils/user-protocols";
+import { User, UserId, UserUpdate } from "@/utils/user-protocols";
 
 async function getUsers() {
     const users = await userRepositories.findUsers();
@@ -39,13 +39,22 @@ async function updateUser({ username, email, password, userId }: UserUpdate) {
         password: hashedPasswd,
         userId
     });
-    
+
     return updatedUser;
+}
+
+async function deleteUser({ userId }: UserId) {
+    const user = await userRepositories.findUserById(userId)
+    if (!user) throw errors.notFoundError()
+
+    const result = await userRepositories.deleteUser(userId)
+    return result;
 }
 
 export const userServices = {
     getUsers,
     createUser,
     getSpecificUser,
-    updateUser
+    updateUser,
+    deleteUser
 }

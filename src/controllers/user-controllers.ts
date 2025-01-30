@@ -53,3 +53,16 @@ export async function updateUser(req: any, res: any) {
         errorHandler(error, req, res);
     }
 }
+
+export async function deleteUser(req: any, res: any) {
+    const { id } = req.params;
+    const userId = parseInt(id);
+
+    try {
+        await userServices.deleteUser({ userId })
+        return res.status(httpStatus.OK).send({});
+    } catch (err) {
+        const error = err as ApplicationError | Error;
+        errorHandler(error, req, res)
+    }
+}
