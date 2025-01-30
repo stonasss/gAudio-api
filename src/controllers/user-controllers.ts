@@ -27,3 +27,15 @@ export async function register (req: Request, res: Response) {
         errorHandler(error, req, res);
     }
 }
+
+export async function getSpecificUser(req: any, res: any) {
+    const { id } = req.params;
+
+    try {
+        const user = await userServices.getSpecificUser(parseInt(id));
+        return res.status(httpStatus.OK).send({ user });
+    } catch (err) {
+        const error = err as ApplicationError | Error;
+        errorHandler(error, req, res)
+    }
+}

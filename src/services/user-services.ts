@@ -22,7 +22,14 @@ async function createUser({ username, email, password }: User) {
     });
 }
 
+async function getSpecificUser(id: number) {
+    const user = await userRepositories.findUserById(id);
+    if (!user) throw errors.notFoundError();
+    return user;
+}
+
 export const userServices = {
     getUsers,
-    createUser
+    createUser,
+    getSpecificUser
 }

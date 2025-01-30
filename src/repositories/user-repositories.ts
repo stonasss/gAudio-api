@@ -1,6 +1,5 @@
 import prisma from "@/config/database";
 import { User } from "@/utils/user-protocols";
-import { create } from "domain";
 
 async function findUsers() {
     const users = await prisma.user.findMany()
@@ -17,6 +16,16 @@ async function findUserByEmail(email: string) {
     return user;
 };
 
+async function findUserById(id: number) {
+    const user = await prisma.user.findFirst({
+        where: {
+            id: id,
+        }
+    })
+
+    return user;
+}
+
 async function createUser({ username, email, password }: User) {
     const user = await prisma.user.create({
         data: {
@@ -32,5 +41,6 @@ async function createUser({ username, email, password }: User) {
 export const userRepositories = {
     findUsers,
     findUserByEmail,
+    findUserById,
     createUser
 }
