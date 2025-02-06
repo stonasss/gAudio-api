@@ -1,4 +1,4 @@
-import { ValidPick } from "@/utils/picks-protocols";
+import { NewPick, PickToUpdate, ValidPick } from "@/utils/picks-protocols";
 import { picksRepositories } from "../repositories/picks-repositories";
 import { errors } from "@/errors";
 
@@ -27,6 +27,12 @@ async function getPickById(id: string) {
     return pick;
 }
 
+async function getPicksByUserId(id: string) {
+    const userId = parseInt(id);
+    const userPicks = await picksRepositories.getPicksByUser(userId);
+    return userPicks;
+}
+
 async function deletePick(id: string) {
     const pickId = parseInt(id);
     const pick = await picksRepositories.getPickById(pickId);
@@ -35,9 +41,24 @@ async function deletePick(id: string) {
     return result;
 }
 
+async function updatePick({ image, artist, title, description, link, id }: PickToUpdate) {
+    const pickId = parseInt(id);
+    const pick = await picksRepositories.updatePick({
+        image,
+        artist, 
+        title,
+        description,
+        link,
+        pickId
+    });
+    return pick;
+}
+
 export const picksServices = {
     getPicks,
     createPick,
     getPickById,
     deletePick,
+    getPicksByUserId,
+    updatePick
 }

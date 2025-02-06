@@ -72,6 +72,13 @@ async function retrieveSession(userToken: string) {
     return result.userId;
 }
 
+async function retrieveUserById(id: string) {
+    const userId = parseInt(id);
+    const result = await userRepositories.findUserById(userId);
+    if (!result) throw errors.notFoundError();
+    return result;
+}
+
 export const userServices = {
     getUsers,
     createUser,
@@ -79,5 +86,6 @@ export const userServices = {
     getSpecificUser,
     updateUser,
     deleteUser,
-    retrieveSession
+    retrieveSession,
+    retrieveUserById
 }
