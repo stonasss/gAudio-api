@@ -19,15 +19,39 @@ model session {
     token     String   @unique @db.VarChar
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-    user      user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_fk0")
+    user      user     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_fk0")
 }
 
 model user {
-    id         Int      @id @default(autoincrement())
+    id         Int       @id @default(autoincrement())
     username   String
-    email      String   @unique
+    email      String    @unique
     password   String
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    created_at DateTime  @default(now())
+    updated_at DateTime  @updatedAt
     session    session[]
+    picks      picks[]
+    reviews    reviews[]
+}
+
+model picks {
+    id          Int     @id(map: "picks_pk") @default(autoincrement())
+    userId      Int
+    image       String
+    title       String  @db.VarChar
+    artist      String  @db.VarChar
+    description String
+    link        String? @db.VarChar
+    user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "picks_fk0")
+    reviews     reviews[]
+}
+
+model reviews {
+    id          Int     @id(map: "reviews_pk") @default(autoincrement())
+    userId      Int
+    pickId      Int
+    description String
+    relisten    Boolean @default(false)
+    user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk0")
+    pick        picks   @relation(fields: [pickId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk1")
 }
