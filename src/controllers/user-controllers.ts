@@ -6,7 +6,7 @@ import { userServices } from "@/services/user-services";
 import { loginSchema, registerSchema } from "@/schemas/user-schemas";
 import { userRepositories } from "@/repositories/user-repositories";
 
-export async function getUsers (req: any, res: any) {
+export async function getUsers (req: Request, res: Response) {
     try {
         const users = await userServices.getUsers();
         return res.status(httpStatus.OK).send({ users })
@@ -16,7 +16,7 @@ export async function getUsers (req: any, res: any) {
     }
 }
 
-export async function getSpecificUser(req: any, res: any) {
+export async function getSpecificUser(req: Request, res: Response) {
     const { id } = req.params;
 
     try {
@@ -28,7 +28,7 @@ export async function getSpecificUser(req: any, res: any) {
     }
 }
 
-export async function register (req: any, res: any) {
+export async function register (req: Request, res: Response) {
     const {username, email, password} : User = req.body;
     const { error } = registerSchema.validate(req.body)
 
@@ -43,7 +43,7 @@ export async function register (req: any, res: any) {
     }
 }
 
-async function login (req: any, res: any) {
+async function login (req: Request, res: Response) {
     const login = req.body as LoginUser;
     const { error } = loginSchema.validate(login);
 
@@ -54,7 +54,7 @@ async function login (req: any, res: any) {
         const token = await userServices.loginUser({ email, password });
         if (token) {
             const username = await userRepositories.findUserByEmail(email);
-            return res.status(httpStatus.OK).send({ token, username})
+            return res.status(httpStatus.OK).send({ token, username })
         }
     } catch (err) {
         const error = err as ApplicationError | Error;
@@ -62,7 +62,7 @@ async function login (req: any, res: any) {
     }
 }
 
-export async function updateUser(req: any, res: any) {
+export async function updateUser(req: Request, res: Response) {
     const { id } = req.params;
     const userId = parseInt(id);
     const { username, email, password } = req.body;
@@ -76,7 +76,7 @@ export async function updateUser(req: any, res: any) {
     }
 }
 
-export async function deleteUser(req: any, res: any) {
+export async function deleteUser(req: Request, res: Response) {
     const { id } = req.params;
     const userId = parseInt(id);
 

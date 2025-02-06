@@ -66,11 +66,18 @@ async function deleteUser({ userId }: UserId) {
     return result;
 }
 
+async function retrieveSession(userToken: string) {
+    const result = await userRepositories.findSessionByToken(userToken);
+    if (!result) throw errors.notFoundError();
+    return result.userId;
+}
+
 export const userServices = {
     getUsers,
     createUser,
     loginUser,
     getSpecificUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    retrieveSession
 }
