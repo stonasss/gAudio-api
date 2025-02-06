@@ -31,6 +31,7 @@ model user {
     updated_at DateTime  @updatedAt
     session    session[]
     picks      picks[]
+    reviews    reviews[]
 }
 
 model picks {
@@ -42,4 +43,15 @@ model picks {
     description String
     link        String? @db.VarChar
     user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "picks_fk0")
+    reviews     reviews[]
+}
+
+model reviews {
+    id          Int     @id(map: "reviews_pk") @default(autoincrement())
+    userId      Int
+    pickId      Int
+    description String
+    relisten    Boolean @default(false)
+    user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk0")
+    pick        picks   @relation(fields: [pickId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk1")
 }
