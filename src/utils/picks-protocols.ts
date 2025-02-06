@@ -2,6 +2,7 @@ export type Pick = {
     id: number;
     image: string;
     title: string;
+    artist: string;
     description: string;
     link: string;
     userId: number;

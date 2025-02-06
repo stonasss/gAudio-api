@@ -6,10 +6,11 @@ async function getPicks() {
     return result;
 };
 
-async function createPick({ image, title, description, link, userId }: ValidPick) {
+async function createPick({ image, title, artist, description, link, userId }: ValidPick) {
     const pick = await picksRepositories.createPick({
         image,
         title,
+        artist,
         description,
         link,
         userId

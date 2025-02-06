@@ -38,6 +38,7 @@ model picks {
     userId      Int
     image       String
     title       String  @db.VarChar
+    artist      String  @db.VarChar
     description String
     link        String? @db.VarChar
     user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "picks_fk0")

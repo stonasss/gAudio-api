@@ -24,7 +24,7 @@ async function newPick(req: Request, res: Response) {
     const { error } = pickSchema.validate(pick);
     if (error) return res.status(httpStatus.BAD_REQUEST).send({ message: error.message });
 
-    const { image, title, description, link } = req.body;
+    const { image, title, artist, description, link } = req.body;
 
     try {
         const userId = await userServices.retrieveSession(userToken);
@@ -33,6 +33,7 @@ async function newPick(req: Request, res: Response) {
         const result = await picksServices.createPick({
             image,
             title,
+            artist,
             description,
             link,
             userId
