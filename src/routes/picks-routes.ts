@@ -6,5 +6,6 @@ const picksRoutes = Router();
 
 picksRoutes.get("/", picksControllers.getPicks);
 picksRoutes.post("/new", authValidate, picksControllers.newPick);
+picksRoutes.delete("/:id", authValidate, picksControllers.deletePick);
 
 export default picksRoutes;

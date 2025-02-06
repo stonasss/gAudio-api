@@ -6,6 +6,7 @@ import { picksServices } from "@/services/picks-services";
 import { NewPick } from "@/utils/picks-protocols";
 import { pickSchema } from "@/schemas/picks-schemas";
 import { userServices } from "@/services/user-services";
+import { CheckId } from "@/utils/protocols";
 
 async function getPicks(req: Request, res: Response) {
     try {
@@ -46,7 +47,27 @@ async function newPick(req: Request, res: Response) {
     }
 }
 
+async function deletePick(req: Request, res: Response) {
+    const { id } = req.params as CheckId;
+    const userToken = res.locals.user;
+
+    try {
+        const pickExists = await picksServices.getPickById(id);
+        if (!pickExists) return res.status(httpStatus.BAD_REQUEST).send("Pick does not exist");
+
+        const userId = await userServices.retrieveSession(userToken);
+        if (pickExists.userId !== userId) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request")
+        
+        await picksServices.deletePick(id);
+        return res.status(httpStatus.OK).send("Pick deleted");
+    } catch (err) {
+        const error = err as ApplicationError | Error;
+        errorHandler(error, req, res);
+    }
+}
+
 export const picksControllers = {
     getPicks,
     newPick,
+    deletePick
 }
