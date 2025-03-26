@@ -11,7 +11,7 @@ async function getPickById(pickId: number) {
             id: pickId,
         },
     });
-    
+
     return pick;
 }
 

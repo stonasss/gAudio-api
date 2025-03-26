@@ -7,19 +7,6 @@ async function getPicks() {
     return result;
 };
 
-async function createPick({ image, title, artist, description, link, userId }: ValidPick) {
-    const pick = await picksRepositories.createPick({
-        image,
-        title,
-        artist,
-        description,
-        link,
-        userId
-    });
-
-    return pick;
-}
-
 async function getPickById(id: string) {
     const pickId = parseInt(id);
     const pick = await picksRepositories.getPickById(pickId);
@@ -31,6 +18,19 @@ async function getPicksByUserId(id: string) {
     const userId = parseInt(id);
     const userPicks = await picksRepositories.getPicksByUser(userId);
     return userPicks;
+}
+
+async function createPick({ image, title, artist, description, link, userId }: ValidPick) {
+    const pick = await picksRepositories.createPick({
+        image,
+        title,
+        artist,
+        description,
+        link,
+        userId
+    });
+
+    return pick;
 }
 
 async function deletePick(id: string) {
