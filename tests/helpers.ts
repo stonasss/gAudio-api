@@ -13,7 +13,7 @@ export async function cleanDb() {
 
 export async function generateValidToken(user?: user) {
     const incomingUser = user || (await createUser());
-    const token = jwt.sign({ userId: incomingUser.id }, process.env.SECRET_KEY );
+    const token = jwt.sign({ user_id: incomingUser.id }, process.env.SECRET_KEY );
 
     await createSession(token);
 

@@ -46,13 +46,13 @@ async function createUser({ username, email, password }: User) {
     return user;
 }
 
-async function createSession(token: string, userId: number) {
+async function createSession(token: string, user_id: number) {
     const session = await prisma.session.upsert({
         where: {
-            userId,
+            user_id,
         },
         create: {
-            userId,
+            user_id,
             token
         },
         update: {
@@ -78,10 +78,10 @@ async function updateUser({ username, email, password, userId }: UserUpdate) {
     return updatedUser;
 }
 
-async function deleteUser(userId: number){
+async function deleteUser(user_id: number){
     const deletedUser = await prisma.user.delete({
         where: {
-            id: userId,
+            id: user_id,
         }
     });
 

@@ -12,7 +12,6 @@ async function getUsers() {
 
 async function createUser({ username, email, password }: User) {
     const userExists = await userRepositories.findUserByEmail(email);
-
     if (userExists) throw errors.duplicatedEmail();
 
     const hashedPasswd: string = await bcrypt.hash(password, 10);

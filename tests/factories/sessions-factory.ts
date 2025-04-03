@@ -8,7 +8,7 @@ export async function createSession(token: string): Promise<session> {
     return prisma.session.create({
         data: {
             token,
-            userId: user.id
+            user_id: user.id
         },
     });
 };

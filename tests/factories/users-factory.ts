@@ -16,11 +16,11 @@ export async function createUser(params: Partial<user> = {}): Promise<user> {
     })
 }
 
-export async function loginUser(token: string, userId: number) {
+export async function loginUser(token: string, user_id: number) {
     return await prisma.session.create({
         data: {
             token,
-            userId
+            user_id
         },
     })
 }

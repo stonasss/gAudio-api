@@ -20,14 +20,14 @@ async function getPicksByUserId(id: string) {
     return userPicks;
 }
 
-async function createPick({ image, title, artist, description, link, userId }: ValidPick) {
+async function createPick({ image, title, artist, description, link, user_id }: ValidPick) {
     const pick = await picksRepositories.createPick({
         image,
         title,
         artist,
         description,
         link,
-        userId
+        user_id
     });
 
     return pick;
@@ -42,14 +42,14 @@ async function deletePick(id: string) {
 }
 
 async function updatePick({ image, artist, title, description, link, id }: PickToUpdate) {
-    const pickId = parseInt(id);
+    const pick_id = parseInt(id);
     const pick = await picksRepositories.updatePick({
         image,
         artist, 
         title,
         description,
         link,
-        pickId
+        pick_id
     });
     return pick;
 }

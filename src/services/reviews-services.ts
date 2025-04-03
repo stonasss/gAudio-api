@@ -21,12 +21,12 @@ async function getReviewsByUserId(id: string) {
     return userReviews;
 }
 
-async function createReview({ description, relisten, pickId, userId }: any) {
+async function createReview({ description, relisten, pick_id, user_id }: any) {
     const review = await reviewsRepositories.createReview({
         description,
         relisten,
-        pickId,
-        userId
+        pick_id,
+        user_id
     });
 
     return review;

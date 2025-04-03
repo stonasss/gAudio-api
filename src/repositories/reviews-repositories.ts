@@ -15,23 +15,23 @@ async function getReviewById(reviewId: number) {
     return review;
 }
 
-async function getReviewsByUser(userId: number) {
+async function getReviewsByUser(user_id: number) {
     const reviews = await prisma.reviews.findMany({
         where: {
-            userId,
+            user_id,
         },
     });
 
     return reviews;
 }
 
-async function createReview({ description, relisten, pickId, userId }: ValidReview) {
+async function createReview({ description, relisten, pick_id, user_id }: ValidReview) {
     const review = await prisma.reviews.create({
         data: {
             description,
             relisten,
-            pickId,
-            userId
+            pick_id,
+            user_id
         },
     });
 

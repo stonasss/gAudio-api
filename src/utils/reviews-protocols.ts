@@ -1,7 +1,7 @@
 export type Review = {
     id: number;
-    userId: number;
-    pickId: number;
+    user_id: number;
+    pick_id: number;
     description: string;
     relisten: boolean;
 };
@@ -18,5 +18,5 @@ export type EditReview = {
     relisten: boolean;
 }
 
-export type NewReview = Omit<Review, "id" | "userId" | "pickId">
+export type NewReview = Omit<Review, "id" | "user_id" | "pick_id">
 export type ValidReview = Omit<Review, "id">
