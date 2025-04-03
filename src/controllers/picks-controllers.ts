@@ -25,7 +25,7 @@ async function getPicksByUserId(req: Request, res: Response) {
     try {
         const sessionId = await userServices.retrieveSession(userToken);
         const userId = await userServices.retrieveUserById(id);
-        if (userId.id !== sessionId.userId) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
+        if (userId.id !== sessionId.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
 
         const userPicks = await picksServices.getPicksByUserId(id);
         return res.status(httpStatus.OK).send({ userPicks });
@@ -54,7 +54,7 @@ async function newPick(req: Request, res: Response) {
             artist,
             description,
             link,
-            userId: userId.userId
+            user_id: userId.user_id
         });
 
         return res.status(httpStatus.CREATED).send({ result });
@@ -73,7 +73,7 @@ async function deletePick(req: Request, res: Response) {
         if (!pickExists) return res.status(httpStatus.BAD_REQUEST).send("Pick does not exist");
 
         const userId = await userServices.retrieveSession(userToken);
-        if (pickExists.userId !== userId.userId) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request")
+        if (pickExists.user_id !== userId.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request")
 
         await picksServices.deletePick(id);
         return res.status(httpStatus.OK).send("Pick deleted");
@@ -98,7 +98,7 @@ async function updatePick(req: Request, res: Response) {
         if (!pickExists) return res.status(httpStatus.BAD_REQUEST).send("Pick does not exist");
 
         const userId = await userServices.retrieveSession(userToken);
-        if (pickExists.userId !== userId.id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
+        if (pickExists.user_id !== userId.id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
 
         const result = await picksServices.updatePick({
             image,

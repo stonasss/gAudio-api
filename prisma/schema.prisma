@@ -15,11 +15,11 @@ datasource db {
 
 model session {
     id        Int      @id(map: "sessions_pk") @default(autoincrement())
-    userId    Int      @unique
+    user_id    Int      @unique
     token     String   @unique @db.VarChar
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    user      user     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "sessions_fk0")
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+    user      user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "sessions_fk0")
 }
 
 model user {
@@ -36,22 +36,22 @@ model user {
 
 model picks {
     id          Int     @id(map: "picks_pk") @default(autoincrement())
-    userId      Int
+    user_id      Int
     image       String
     title       String  @db.VarChar
     artist      String  @db.VarChar
     description String
     link        String? @db.VarChar
-    user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "picks_fk0")
+    user        user    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "picks_fk0")
     reviews     reviews[]
 }
 
 model reviews {
     id          Int     @id(map: "reviews_pk") @default(autoincrement())
-    userId      Int
-    pickId      Int
+    user_id      Int
+    pick_id      Int
     description String
     relisten    Boolean @default(false)
-    user        user    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk0")
-    pick        picks   @relation(fields: [pickId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk1")
+    user        user    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "reviews_fk0")
+    pick        picks   @relation(fields: [pick_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "reviews_fk1")
 }

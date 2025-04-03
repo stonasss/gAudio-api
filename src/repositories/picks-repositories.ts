@@ -5,30 +5,30 @@ async function getPicks() {
     return prisma.picks.findMany();
 }
 
-async function getPickById(pickId: number) {
+async function getPickById(pick_id: number) {
     const pick = await prisma.picks.findFirst({
         where: {
-            id: pickId,
+            id: pick_id,
         },
     });
 
     return pick;
 }
 
-async function getPicksByUser(userId: number) {
+async function getPicksByUser(user_id: number) {
     const picks = await prisma.picks.findMany({
         where: {
-            userId,
+            user_id,
         },
     });
 
     return picks;
 }
 
-async function createPick({ image, title, artist, description, link, userId }: ValidPick) {
+async function createPick({ image, title, artist, description, link, user_id }: ValidPick) {
     const pick = await prisma.picks.create({
         data: {
-            userId,
+            user_id,
             image,
             title,
             artist,
@@ -50,10 +50,10 @@ async function deletePick(pickId: number) {
     return result;
 }
 
-async function updatePick({ image, title, artist, description, link, pickId }: EditPick) {
+async function updatePick({ image, title, artist, description, link, pick_id }: EditPick) {
     const result = await prisma.picks.update({
         where: {
-            id: pickId,
+            id: pick_id,
         },
         data: {
             image,

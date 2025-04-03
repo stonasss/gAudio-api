@@ -26,7 +26,7 @@ async function getReviewsByUserId(req: Request, res: Response) {
     try {
         const sessionId = await userServices.retrieveSession(userToken);
         const userId = await userServices.retrieveUserById(id);
-        if (userId.id !== sessionId.userId) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
+        if (userId.id !== sessionId.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
 
         const userReviews = await reviewsServices.getReviewsByUserId(id);
         return res.status(httpStatus.OK).send({ userReviews });
@@ -54,8 +54,8 @@ async function newReview(req: Request, res: Response) {
         const result = await reviewsServices.createReview({
             description,
             relisten,
-            pickId: pickExists.id,
-            userId: (await userId).userId
+            pick_id: pickExists.id,
+            user_id: (await userId).user_id
         })
 
         return res.status(httpStatus.CREATED).send({ result });
@@ -74,7 +74,7 @@ async function deleteReview(req: Request, res: Response) {
         if (!reviewExists) return res.status(httpStatus.BAD_REQUEST).send("Review does not exists");
 
         const userId = await userServices.retrieveSession(userToken);
-        if (reviewExists.userId !== userId.userId) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
+        if (reviewExists.user_id !== userId.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
 
         await reviewsServices.deleteReview(id);
         return res.status(httpStatus.OK).send("Review deleted");
@@ -99,7 +99,7 @@ async function updateReview(req: Request, res: Response) {
         if (!reviewExists) return res.status(httpStatus.BAD_REQUEST).send("Review does not exist");
 
         const userId = await userServices.retrieveSession(userToken);
-        if (reviewExists.userId !== userId.userId) return res.status(httpStatus.UNAUTHORIZED).send("Invaid request");
+        if (reviewExists.user_id !== userId.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invaid request");
 
         const result = await reviewsServices.updateReview({
             description,

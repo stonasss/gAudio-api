@@ -5,7 +5,7 @@ export type Pick = {
     artist: string;
     description: string;
     link: string;
-    userId: number;
+    user_id: number;
 };
 
 export type PickToUpdate = {
@@ -18,7 +18,7 @@ export type PickToUpdate = {
 }
 
 export type EditPick = {
-    pickId: number;
+    pick_id: number;
     image: string;
     title: string;
     artist: string;
@@ -26,5 +26,5 @@ export type EditPick = {
     link: string;
 }
 
-export type NewPick = Omit<Pick, "id" | "userId">
+export type NewPick = Omit<Pick, "id" | "user_id">
 export type ValidPick = Omit<Pick, "id">
