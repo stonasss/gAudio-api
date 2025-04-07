@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 const server = supertest(app);
 
-const generateValidBody = () => ({
+const generateValidUser = () => ({
     username: faker.internet.username(),
     email: faker.internet.email(),
     password: faker.internet.password({ length: 10 })
@@ -36,7 +36,7 @@ describe('GET /users', () => {
     });
 
     it('should respond with status 200 and correct body if users registered', async () => {
-        const body = generateValidBody();
+        const body = generateValidUser();
         await server.post('/register').send(body)
 
         const response = await server.get('/users')
@@ -70,14 +70,14 @@ describe('POST /register', () => {
         })
 
         it('should respond with status 409 when there is already a user with the same email', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await createUser(body);
             const response = await server.post('/register').send(body);
             expect(response.status).toBe(httpStatus.CONFLICT);
         });
 
         it('should respond with status 201 and create user when email is unique', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             const response = await server.post('/register').send(body);
             expect(response.status).toBe(httpStatus.CREATED);
             expect(response.body).toEqual({
@@ -87,13 +87,13 @@ describe('POST /register', () => {
         });
 
         it('should not return user password on body', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             const response = await server.post('/register').send(body);
             expect(response.body).not.toHaveProperty('password');
         });
 
         it('should save user in database', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
 
             const user = await prisma.user.findUnique({
@@ -136,7 +136,7 @@ describe('POST /login', () => {
         })
 
         it(`should respond with status 401 if email is correct and password isn't`, async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
 
             const incorrectPassword = {
@@ -148,7 +148,7 @@ describe('POST /login', () => {
         })
 
         it(`should respond with status 401 if password is correct and email isn't`, async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
 
             const incorrectEmail = {
@@ -160,7 +160,7 @@ describe('POST /login', () => {
         })
 
         it('should respond with status 200 and correct body with token', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
 
             const login = {
@@ -206,7 +206,7 @@ describe('DELETE /users', () => {
     })
 
     it('should respond with status 401 if token is not valid', async () => {
-        const body = generateValidBody();
+        const body = generateValidUser();
         await server.post('/register').send(body);
 
         const user = await prisma.user.findUnique({
@@ -222,7 +222,7 @@ describe('DELETE /users', () => {
     })
 
     it('should respond with status 204 if deletion successful', async () => {
-        const body = generateValidBody();
+        const body = generateValidUser();
         await server.post('/register').send(body);
 
         const user = await prisma.user.findUnique({
@@ -259,7 +259,7 @@ describe('UPDATE /users', () => {
         })
 
         it('should respond with 400 when body is not given', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
     
             const user = await prisma.user.findUnique({
@@ -275,7 +275,7 @@ describe('UPDATE /users', () => {
         })
 
         it('should respond with 400 when body is not valid', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
     
             const user = await prisma.user.findUnique({
@@ -292,7 +292,7 @@ describe('UPDATE /users', () => {
         })
 
         it('should respond with 401 when token is not valid', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
     
             const user = await prisma.user.findUnique({
@@ -314,7 +314,7 @@ describe('UPDATE /users', () => {
         })
 
         it('should respond with 200 when user is succesfully updated', async () => {
-            const body = generateValidBody();
+            const body = generateValidUser();
             await server.post('/register').send(body);
     
             const user = await prisma.user.findUnique({
