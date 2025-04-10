@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "build": "prisma generate && tsc",
-    "dev": "tsx watch src/app.ts",
+    "dev": "tsx watch src/server.ts",
     "test": "cross-env NODE_ENV=test dotenv -e .env.test jest --runInBand",
     "test:reset": "cross-env NODE_ENV=test dotenv -e .env.test prisma migrate reset --force",
     "test:migrate": "cross-env NODE_ENV=test dotenv -e .env.test prisma migrate dev --name init",
-    "start": "node dist/app.js",
+    "start": "node dist/server.js",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"
   },

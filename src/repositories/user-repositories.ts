@@ -19,7 +19,7 @@ async function findUserByEmail(email: string) {
 async function findUserById(id: number) {
     const user = await prisma.user.findFirst({
         where: {
-            id: id,
+            id
         }
     })
 
@@ -52,7 +52,7 @@ async function createSession(token: string, user_id: number) {
             user_id,
         },
         create: {
-            user_id,
+            user_id: user_id,
             token
         },
         update: {

@@ -17,10 +17,23 @@ export async function createUser(params: Partial<user> = {}): Promise<user> {
 }
 
 export async function loginUser(token: string, user_id: number) {
-    return await prisma.session.create({
-        data: {
-            token,
-            user_id
-        },
-    })
+    return await prisma.$transaction(async (tx) => {
+        const sessionExists = await tx.session.findUnique({
+            where: { user_id }
+        });
+
+        if (sessionExists) {
+            return await prisma.session.update({
+                where: { user_id },
+                data: { token }
+            })
+        };
+    
+        return await prisma.session.create({
+            data: {
+                token,
+                user_id: user_id
+            },
+        });
+    });
 }

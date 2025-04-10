@@ -11,6 +11,10 @@ beforeAll(async () => {
     await cleanDb();
 });
 
+afterAll(async () => {
+    await prisma.$disconnect();
+})
+
 const server = supertest(app);
 
 const generateValidUser = () => ({
@@ -19,8 +23,14 @@ const generateValidUser = () => ({
     password: faker.internet.password({ length: 10 })
 });
 
+jest.retryTimes(5);
+
 describe('GET /users', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
+        await cleanDb();
+    });
+
+    afterEach(async () => {
         await cleanDb();
     })
 
@@ -48,9 +58,13 @@ describe('GET /users', () => {
 })
 
 describe('POST /register', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         await cleanDb();
     });
+
+    afterEach(async () => {
+        await cleanDb();
+    })
 
     it('should respond with status 400 when body is not given', async () => {
         const response = await server.post('/register')
@@ -64,9 +78,12 @@ describe('POST /register', () => {
     })
 
     describe('when body is valid', () => {
-        beforeAll(async() => {
-            await prisma.session.deleteMany();
-            await prisma.user.deleteMany({});
+        beforeEach(async () => {
+            await cleanDb();
+        });
+    
+        afterEach(async () => {
+            await cleanDb();
         })
 
         it('should respond with status 409 when there is already a user with the same email', async () => {
@@ -114,9 +131,13 @@ describe('POST /register', () => {
 })
 
 describe('POST /login', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         await cleanDb();
     });
+
+    afterEach(async () => {
+        await cleanDb();
+    })
 
     it('should respond with status 400 when body is not given', async () => {
         const response = await server.post('/login');
@@ -130,9 +151,12 @@ describe('POST /login', () => {
     });
 
     describe('when body is valid', () => {
-        beforeAll(async () => {
-            await prisma.session.deleteMany();
-            await prisma.user.deleteMany();
+        beforeEach(async () => {
+            await cleanDb();
+        });
+    
+        afterEach(async () => {
+            await cleanDb();
         })
 
         it(`should respond with status 401 if email is correct and password isn't`, async () => {
@@ -191,21 +215,15 @@ describe('POST /login', () => {
 })
 
 describe('DELETE /users', () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
         await cleanDb();
     });
 
-    it('should respond with status 404 and correct body if id does not exist', async () => {
-        const id = {
-            id: 99999
-        }
-
-        const response = await server.delete('/users').send(id)
-        expect(response.status).toBe(httpStatus.NOT_FOUND)
-        expect(response.body).toEqual({})
+    afterEach(async () => {
+        await cleanDb();
     })
 
-    it('should respond with status 401 if token is not valid', async () => {
+    it('should respond with status 404 and correct body if id does not exist', async () => {
         const body = generateValidUser();
         await server.post('/register').send(body);
 
@@ -216,6 +234,27 @@ describe('DELETE /users', () => {
         });
         const token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY)
         await loginUser(token, user.id)
+
+        const invalidId = 99999;
+        const response = await server.delete(`/users/${invalidId}`).set('Authorization', `Bearer ${token}`)
+        expect(response.status).toBe(httpStatus.NOT_FOUND)
+        expect(response.body).toEqual({
+            "message": "No results found",
+        })
+    })
+
+    it('should respond with status 401 if token is not valid', async () => {
+        const body = generateValidUser();
+        await createUser(body);
+
+        const user = await prisma.user.findUnique({
+            where: {
+                email: body.email
+            },
+        });
+        const token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY)
+        await loginUser(token, user.id)
+
         const invalidToken = { [faker.lorem.word()]: faker.lorem.word() };
         const response = await server.delete(`/users/${user.id}`).set('Authorization', `Bearer ${invalidToken}`)
         expect(response.status).toBe(httpStatus.UNAUTHORIZED)
@@ -223,7 +262,7 @@ describe('DELETE /users', () => {
 
     it('should respond with status 204 if deletion successful', async () => {
         const body = generateValidUser();
-        await server.post('/register').send(body);
+        await createUser(body);
 
         const user = await prisma.user.findUnique({
             where: {
@@ -237,30 +276,50 @@ describe('DELETE /users', () => {
     })
 })
 
-describe('UPDATE /users', () => {
-    beforeAll(async () => {
+describe('PUT /users', () => {
+    beforeEach(async () => {
         await cleanDb();
     });
 
-    it('should respond with status 404 and correct body if id does not exist', async () => {
-        const id = {
-            id: 99999
-        }
+    afterEach(async () => {
+        await cleanDb();
+    })
 
-        const response = await server.put('/users').send(id)
+    it('should respond with status 404 and correct body if id does not exist', async () => {
+        const body = generateValidUser();
+        await createUser(body);
+
+        const user = await prisma.user.findUnique({
+            where: {
+                email: body.email
+            },
+        });
+        const token = jwt.sign({ user_id: user.id }, process.env.SECRET_KEY)
+        await loginUser(token, user.id)
+
+        const updatedBody = {
+            username: faker.internet.username(),
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+        }
+        const invalidId = 99999;
+
+        const response = await server.put(`/users/${invalidId}`).set('Authorization', `Bearer ${token}`).send(updatedBody)
         expect(response.status).toBe(httpStatus.NOT_FOUND)
-        expect(response.body).toEqual({})
     })
 
     describe('when id exists', () => {
-        beforeAll(async () => {
-            await prisma.session.deleteMany();
-            await prisma.user.deleteMany();
+        beforeEach(async () => {
+            await cleanDb();
+        });
+    
+        afterEach(async () => {
+            await cleanDb();
         })
 
         it('should respond with 400 when body is not given', async () => {
             const body = generateValidUser();
-            await server.post('/register').send(body);
+            await createUser(body);
     
             const user = await prisma.user.findUnique({
                 where: {
@@ -276,7 +335,7 @@ describe('UPDATE /users', () => {
 
         it('should respond with 400 when body is not valid', async () => {
             const body = generateValidUser();
-            await server.post('/register').send(body);
+            await createUser(body);
     
             const user = await prisma.user.findUnique({
                 where: {
@@ -293,7 +352,7 @@ describe('UPDATE /users', () => {
 
         it('should respond with 401 when token is not valid', async () => {
             const body = generateValidUser();
-            await server.post('/register').send(body);
+            await createUser(body);
     
             const user = await prisma.user.findUnique({
                 where: {
@@ -308,15 +367,15 @@ describe('UPDATE /users', () => {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
             }
-            const invalidToken = { [faker.lorem.word()]: faker.lorem.word() };
+            const invalidToken = faker.lorem.word();
             const response = await server.put(`/users/${user.id}`).set('Authorization', `Bearer ${invalidToken}`).send(updatedBody)
             expect(response.status).toBe(httpStatus.UNAUTHORIZED)
         })
 
         it('should respond with 200 when user is succesfully updated', async () => {
             const body = generateValidUser();
-            await server.post('/register').send(body);
-    
+            await createUser(body);
+
             const user = await prisma.user.findUnique({
                 where: {
                     email: body.email

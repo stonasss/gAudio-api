@@ -73,7 +73,7 @@ export async function updateUser(req: Request, res: Response) {
     const userToken = res.locals.user;
     try {
         const user = await userServices.retrieveUserById(id);
-        if (!user) return res.status(httpStatus.BAD_REQUEST).send("User not found");
+        if (!user) return res.status(httpStatus.NOT_FOUND).send("User not found");
 
         const user_id = await userServices.retrieveSession(userToken);
         if (user.id !== user_id.user_id) return res.status(httpStatus.UNAUTHORIZED).send("Invalid request");
